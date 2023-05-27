@@ -3,11 +3,11 @@
 
     <!-- Start up simulated world -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
-        <arg name="world_name" value="$(find Object_detection)/worlds/object_detection.world"/>
+        <arg name="world_name" value="$(find object_detection)/worlds/object_detection.world"/>
         <arg name="paused" value="true"/>
         <arg name="use_sim_time" value="false"/>
         <arg name="gui" value="true"/>
-        <arg name="rate" value ="500"/>
+        <!--arg name="rate" value ="500"/-->
         <arg name="headless" value="false"/>
         <arg name="debug" value="false"/>
     </include>
