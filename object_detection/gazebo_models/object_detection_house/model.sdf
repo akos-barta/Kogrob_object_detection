@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <sdf version='1.7'>
-  <model name='Object_detection_house'>
+  <model name='object_detection_house'>
     <pose>-0.072 2.10186 0 0 -0 0</pose>
     <link name='Wall_16'>
       <pose>-2.225 5.7643 0 0 -0 1.5708</pose>
