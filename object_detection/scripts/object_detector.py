@@ -5,7 +5,6 @@ from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image, CompressedImage
 from geometry_msgs.msg import Twist
 import rospy
-import rospkg
 from queue import Queue
 import threading
 import numpy as np
@@ -19,7 +18,7 @@ from PIL import Image
 # Initialize ROS node
 rospy.init_node('object_detector')
 
-# Finally load model:
+# Load model, for the first run, the code will download this specific model:
 net = model_zoo.get_model('ssd_512_resnet50_v1_voc', pretrained=True)
 
 class BufferQueue(Queue):
@@ -66,8 +65,7 @@ class cvThread(threading.Thread):
             # Process the current image
             self.processImage(self.image)
 
-            # Add processed images as small images on top of main image
-            #result = self.addSmallPictures(self.image, [mask]) #ez ne fog kelleni
+            # Show the original camera image
             cv2.imshow("frame", self.image)
 
             # Check for 'q' key to exit
@@ -87,6 +85,7 @@ class cvThread(threading.Thread):
         cv2.resizeWindow("Detection", 800,600)
         # Detection
         processed = AI_process(img)
+        # Now we have to transform the image back to be able to show it with cv2
         image_processed=mx.image.imread(processed)
         image_to_cv=image_processed.asnumpy()
         image_bgr = cv2.cvtColor(image_to_cv, cv2.COLOR_RGB2BGR)
@@ -102,32 +101,6 @@ class cvThread(threading.Thread):
         # Return processed frames
         return processed
 
-    # Add small images to the top row of the main image
-    def addSmallPictures(self, img, small_images, size=(160, 120)):
-        '''
-        :param img: main image
-        :param small_images: array of small images
-        :param size: size of small images
-        :return: overlayed image
-        '''
-
-        x_base_offset = 40
-        y_base_offset = 10
-
-        x_offset = x_base_offset
-        y_offset = y_base_offset
-
-        for small in small_images:
-            small = cv2.resize(small, size)
-            if len(small.shape) == 2:
-                small = np.dstack((small, small, small))
-
-            img[y_offset: y_offset + size[1], x_offset: x_offset + size[0]] = small
-
-            x_offset += size[0] + x_base_offset
-
-        return img
-
 def queueMonocular(msg):
     try:
         # Convert your ROS Image message to OpenCV2
@@ -139,6 +112,8 @@ def queueMonocular(msg):
         qMono.put(cv2Img)
 
 def AI_process(picture):
+    # this is the object detector function
+    # first of all we have to do some transformation on the image to be able to feed it to the network model
     image_rgb = cv2.cvtColor(picture, cv2.COLOR_BGR2RGB)
     pic = mx.nd.array(image_rgb)
     x, img = data.transforms.presets.ssd.transform_test(pic,short=512)
@@ -150,6 +125,7 @@ def AI_process(picture):
     ax.axis('off')
     plt.tight_layout()
 
+    #the output of the model is a plot, so we have to save it as an image
     fig = ax.get_figure()
     fig.canvas.draw()
     img_data = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
