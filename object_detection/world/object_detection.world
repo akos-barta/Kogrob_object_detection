@@ -89,7 +89,7 @@
     <state world_name='default'>
       <sim_time>0 0</sim_time>
       <real_time>0 0</real_time>
-      <wall_time>1685196104 192430793</wall_time>
+      <wall_time>1685266483 372264789</wall_time>
       <iterations>0</iterations>
       <model name='BathroomSink'>
         <pose>-2.12324 -0.472242 0.723421 0 -0 1.58318</pose>
@@ -9144,7 +9144,7 @@
     </model>
     <gui fullscreen='0'>
       <camera name='user_camera'>
-        <pose>-21.8078 -22.1123 35.7643 -0 0.805798 0.458643</pose>
+        <pose>19.6889 -18.3741 13.375 -0 0.265799 2.43864</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
       </camera>
