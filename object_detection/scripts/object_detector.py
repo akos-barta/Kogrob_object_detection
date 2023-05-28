@@ -16,12 +16,8 @@ from gluoncv import model_zoo, data, utils
 from matplotlib import pyplot as plt
 from PIL import Image
 
-# Initialize ROS node and get CNN model path
-rospy.init_node('line_follower')
-
-rospack = rospkg.RosPack()
-path = rospack.get_path('turtlebot3_mogi')
-model_path = path + "/network_model/model.best.h5"
+# Initialize ROS node
+rospy.init_node('object_detector')
 
 # Finally load model:
 net = model_zoo.get_model('ssd_512_resnet50_v1_voc', pretrained=True)
