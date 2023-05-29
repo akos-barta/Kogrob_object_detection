@@ -8,7 +8,7 @@ import sys
 # Define the velocity commands
 linear_speed = 0.05  # meters per second
 angular_speed = 0.35  # radians per second
-correction_factor = 0.02  # Correction factor for angular velocity
+correction_factor = 0.0  # Correction factor for angular velocity
 
 # Flag to indicate if the robot should continue moving
 is_moving = True
@@ -17,6 +17,8 @@ is_moving = True
 def signal_handler(sig, frame):
     global is_moving
     is_moving = False
+    move_forward(0.0)
+    rotate(0.0, 'left')
     rospy.loginfo("Ctrl+C pressed. Stopping the robot.")
     sys.exit(0)
 

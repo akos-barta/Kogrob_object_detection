@@ -57,7 +57,7 @@ class cvThread(threading.Thread):
     def run(self):
         # Create a single OpenCV window
         cv2.namedWindow("frame", cv2.WINDOW_NORMAL)
-        cv2.resizeWindow("frame", 800,600)
+        cv2.resizeWindow("frame", 600,500)
 
         while True:
             self.image = self.queue.get()
@@ -82,7 +82,7 @@ class cvThread(threading.Thread):
         
         # Create an OpenCV window to show the result
         cv2.namedWindow("Detection", cv2.WINDOW_NORMAL)
-        cv2.resizeWindow("Detection", 800,600)
+        cv2.resizeWindow("Detection", 600,500)
         # Detection
         processed = AI_process(img)
         # Now we have to transform the image back to be able to show it with cv2
