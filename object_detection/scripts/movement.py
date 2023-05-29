@@ -6,7 +6,7 @@ import signal
 import sys
 
 # Define the velocity commands
-linear_speed = 0.05  # meters per second
+linear_speed = 0.1  # meters per second
 angular_speed = 0.35  # radians per second
 correction_factor = 0.0  # Correction factor for angular velocity
 
