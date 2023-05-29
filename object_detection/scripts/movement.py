@@ -6,8 +6,9 @@ import signal
 import sys
 
 # Define the velocity commands
-linear_speed = 0.08  # meters per second
-angular_speed = 0.4  # radians per second
+linear_speed = 0.05  # meters per second
+angular_speed = 0.35  # radians per second
+correction_factor = 0.02  # Correction factor for angular velocity
 
 # Flag to indicate if the robot should continue moving
 is_moving = True
@@ -34,10 +35,13 @@ def move_forward(distance):
 
     # Set the current time
     current_time = rospy.Time.now().to_sec()
-    while (rospy.Time.now().to_sec() - current_time) < duration:
+    while (rospy.Time.now().to_sec() - current_time) < duration and is_moving:
+        vel_msg.angular.z = -correction_factor * vel_msg.linear.x  # Apply angular correction
         velocity_publisher.publish(vel_msg)
+
     # Stop the robot after reaching the desired distance
     vel_msg.linear.x = 0.0
+    vel_msg.angular.z = 0.0
     velocity_publisher.publish(vel_msg)
 
 # Rotate the robot by the specified angle
@@ -58,8 +62,9 @@ def rotate(angle, direction="left"):
 
     # Set the current time
     current_time = rospy.Time.now().to_sec()
-    while (rospy.Time.now().to_sec() - current_time) < duration:
+    while (rospy.Time.now().to_sec() - current_time) < duration and is_moving:
         velocity_publisher.publish(vel_msg)
+
     # Stop the robot after reaching the desired angle
     vel_msg.angular.z = 0.0
     velocity_publisher.publish(vel_msg)
@@ -67,6 +72,8 @@ def rotate(angle, direction="left"):
 # Main function
 if __name__ == '__main__':
     rospy.init_node('turtlebot3_rectangle_trajectory')
+    move_forward(0.0)
+    rotate(0, "left")
     rospy.sleep(1)
 
     # Register the signal handler for Ctrl+C
