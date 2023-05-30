@@ -11,6 +11,9 @@
 # Bevezetés
 Feladatunk egy olyan Turtlebot 3 segítségével megvalósított projekt létrehozása volt, amelyben a Turtlebotot lehelyezzük egy általunk készített világba, ő végighalad a téren az általunk definiált pályás és mi a ráhelyezett kamera képén neurális háló segítségével azonosítjuk az útjába kerülő tárgyakat/embereket.
 ## A működés demonstrálása
+
+<a href="https://www.youtube.com/watch?v=cbscuocVqmM"><img height="400" src="./assets/project.png"></a>
+
 ## Tartalomjegyzék
 1. [Szükséges telepítések](#szükséges-telepítések)
 2. [Turtlebot 3 Submodule](#turtlebot-3-submodule)
