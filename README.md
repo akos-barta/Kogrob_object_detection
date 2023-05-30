@@ -41,9 +41,79 @@ git submodule init
 git submodule update
 ```
 Ezekután a turtlebot3 submodul is meg fog jelenni a könyvtárban.
+## .bashrc
+Hajtottunk végre néhány módosítást a `.bashrc` fájlban is. Ezeket a következőképpen lehet implementálni egy új terminálból:
+```bash
+marci@DESKTOP-6TB9DMC:~$ cd ~
+marci@DESKTOP-6TB9DMC:~$ nano .bashrc
+```
+Így megnyitjuk szerkesztésre a fájlt a `nano` szövegszerkesztőben. Legörgetve a fájl legaljára a következő sorokat kell implementálnunk:
+```bash
+# bash colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[1;36m'
+GRAY='\033[0;37m'
+LINEARBLUE='\033[1;34m'
+# No Color
+NC='\033[0m'
+
+# CUDA stuff
+export LD_LIBRARY_PATH=/usr/lib/cuda/lib64:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/usr/lib/cuda/include:$LD_LIBRARY_PATH
+export PATH=$PATH:/usr/local/cuda/bin
+
+# ROS workspace stuff
+source /opt/ros/noetic/setup.bash
+#WORKSPACE=~/catkin_ws/devel/setup.bash
+WORKSPACE=~/catkin_ws/devel/setup.bash
+source $WORKSPACE
+
+# Automatic ROS IP config
+IP_ADDRESSES=$(hostname -I | sed 's/ *$//g')
+IP_ARRAY=($IP_ADDRESSES)
+FIRST_IP=${IP_ARRAY[0]}
+
+if [ "$FIRST_IP" != "" ];
+then
+    true
+    #echo "There are IP addresses!"
+else
+    echo "Warning FIRST_IP var was empty:" $FIRST_IP
+    echo "Maybe client is not connected to any network?"
+    FIRST_IP=127.0.0.1
+fi
+
+export ROS_MASTER_URI=http://$FIRST_IP:11311
+export ROS_IP=$FIRST_IP
+
+echo -e "=============== ${YELLOW}NETWORK DETAILS${NC} ================="
+echo -e ${GREEN}ACTIVE IP ADDRESSES:${NC}
+echo $IP_ADDRESSES | tr " " "\n"
+echo -e ${GREEN}SELECTED IP ADDRESS:${NC} $FIRST_IP
+
+echo -e "============== ${YELLOW}ROS NETWORK CONFIG${NC} ==============="
+echo export ROS_MASTER_URI=$ROS_MASTER_URI
+echo export ROS_IP=$ROS_IP
+
+# Chess simulation Gazebo path
+export GAZEBO_MODEL_PATH=$GAZEBO_MODEL_PATH:~/catkin_ws/src/mogi_chess_ros_framework/mogi_chess_gazebo/gazebo_models/
+
+# Turtlebot 3 stuff
+export TURTLEBOT3_MODEL=burger
+export GAZEBO_MODEL_PATH=$GAZEBO_MODEL_PATH:~/catkin_ws/src/Kogrob_object_detection/object_detection/gazebo_models
+export LDS_MODEL=LDS-01
+
+echo -e "================= ${YELLOW}ROS WORKSPACE${NC} ================="
+echo -e ${GREEN}WORKSPACE SOURCED:${NC} $WORKSPACE | rev | cut -d'/' -f3- | rev
+echo -e ${GREEN}GAZEBO MODEL PATH:${NC}
+echo $GAZEBO_MODEL_PATH | tr ":" "\n" | sed '/./,$!d'
+echo "================================================="
+```
+A beillsztést követően `Ctrl+X` majd a szerkesztő megkérdezi, hogy szeretnénk-e menteni a módosításokat, ekkor mentsük el ugyanazon a néven a `.bashrc` változtatásait. 
 # Turtlebot 3 Submodule
 Néhány apró módosítást végeztünk az eredeti `turtlebot3` repositoryn, amelyeket a következőkben szeretnénk összefoglalni.
-## Kamera hozzáadása
 ## Kamera hozzáadása
 A kamera hozzáadása 2 fájlt érint, a `/turtlebot3/turtlebot3_description/urdf/turtlebot3_burger.urdf.xacro` és a `/turtlebot3/turtlebot3_description/urdf/turtlebot3_burger.gazebo.xacro` fájlokat. Az előbbi a robot 3D modelljéhez adja hozzá a kameránk modelljét - egy kb. 8,6 fokkal megemelt piros kockát:
 ```xml
@@ -187,9 +257,9 @@ Ahol a függvény a kamera éltal beérkezett képet először átkonvertálja o
 roslaunch object_detection object_detection.launch
 ```
 >Mindehhez futtassuk először egy külön ternimálban a `roscore` parancsot
-parancs segítségével tudjuk futtatni az általunk készített világot.
+parancs segítségével tudjuk futtatni az általunk készített világot.   
 
-![alt text][image1]
+![alt text][image1]   
 
 Maga a `object_detection.launch` fájlban behívjuk az `object_detection.world` fájlt, illetve hozzáadjuk a robotot az általunk kívánt pozícióban.
 ```xml
@@ -220,8 +290,8 @@ Maga a `object_detection.launch` fájlban behívjuk az `object_detection.world` 
 ```
 >A világban legegyszerűbben a `roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch` futtatásával van lehetőségünk mozogni.
 # Detektálás indítása
-Következő lépésben már futtathatjuk az `object_detector.py` nodeunkat egy külön terminálban, amely hatására felugrik két ablak az egyik tartamazza kameraképet, a másikon pedig a neurális háló által detektált objektumok lesznek megtalálhatók.
-![alt text][image2]
+Következő lépésben már futtathatjuk az `object_detector.py` nodeunkat egy külön terminálban, amely hatására felugrik két ablak az egyik tartamazza kameraképet, a másikon pedig a neurális háló által detektált objektumok lesznek megtalálhatók.   
+![alt text][image2]   
 ![alt text][image3]   
 
 Összegezve ezen négy parancs egyidejű futtatása szükséges kézzel történő mozgatás esetén:
@@ -233,8 +303,9 @@ rosrun object_detection object_detector.py
 ```
 # Automatikus mozgatás
 Lehetőségünk van a robotot automatikusan is mozgatni a `movement.py` node futtatásával egy külön terminálban. Ennek hatására a robot egy általunk definiált pályán fog végighaladni. Maga a node a fizikából jól ismert `s=v*t` összefüggés segítségével számolja, hogy meddig kell ahhoz mozognia, hogy 1 méternyi utat megtegyen. A program. A `Ctrl+C` billenytű kombináció htására pedig a robot megáll és ezzel együtt a node is leállításra kerül.
-Viszont észrevettünk egy olyan hibát, ami folytán amennyiben kiadjuk a robotnak a gazebos környezetben, hogy végezzen egyenes vonalú egyenletes mozgást, ő mindig le fog térni a pályáról és egy bizonyos idő elteltével beáll a rácsvonalakra átlós irányú (45°-kal elforgatott) pályára. Viszont amennyiben alapból ilyen irányban indítjuk el a robotot, akkor képes egyenes vonalú egyenletes mozgást végezni. éppen ezért létrehoztunk egy `object_detection_45degree.world` fájlt, amely 45 fokban van elforgatva.
-![alt text][image4]
+Viszont észrevettünk egy olyan hibát, ami folytán amennyiben kiadjuk a robotnak a gazebos környezetben, hogy végezzen egyenes vonalú egyenletes mozgást, ő mindig le fog térni a pályáról és egy bizonyos idő elteltével beáll a rácsvonalakra átlós irányú (45°-kal elforgatott) pályára. Viszont amennyiben alapból ilyen irányban indítjuk el a robotot, akkor képes egyenes vonalú egyenletes mozgást végezni. éppen ezért létrehoztunk egy `object_detection_45degree.world` fájlt, amely 45 fokban van elforgatva.   
+![alt text][image4]   
+
 Az ehhez tartozó külön Launch fájl pedig az `object_detection_45degree.launch`
 Összesítve ebben az esetben is négy különböző parancs egyidejű, külön terminálban történő futtatására van szükség. Ezek:
 ```bash
@@ -245,11 +316,11 @@ rosrun object_detection movement.py
 ```
 # Összefoglalás
 A tesztelések során azt tapasztaltuk, hogy a neurális háló viszonylag pontosan detektálta az útjába kerülő objektumokat. Természetes találkozhatunk anomáliákkal is a futtatás során. Példának okáért a kerekekkel rendelkező ágyat hajlamos a modell kocsiként felismerni. Ennek oka lehet az is, hogy a modell tanítása valós képpekkel történt, illetve abból is adódhat, hogy ilyen jellegő mintán nem lett betanítva.  
-
+    
 ![alt text][image5]   
 
 Kísérlet jelleggel pedig elhelyeztünk az egyik szobában egy fehér dummyt, ugyanis kíváncsiak voltunk, hogy vajon őt emberként ismeri-e fel. A tapasztalataink azok voltak, hogy ebben az esetben a model nem ismerte fel egyáltalán semmit a szobában, amit helyes eredményként konstatáltunk.  
-
+     
 ![alt text][image6]  
 
 Természetesen fejlesztési lehetőségként meg lehet említeni, hogy esetleg kipróbálhatnánk több különböző modellt ugyanezen feladat elvégzésére, illetve akár saját modellt is alkothatnánk, amely kifejezetten a szimulált környezetben lenne betanítva.
@@ -259,3 +330,4 @@ Barta Ákos
 Hanák Zoltán
 Horváth Marcell
 ```
+>`RIP Balu`
