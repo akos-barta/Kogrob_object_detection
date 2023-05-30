@@ -4,17 +4,21 @@
 [image1]: ./assets/vilag.png
 [image2]: ./assets/frame.png
 [image3]: ./assets/Detection.png
+[image4]: ./assets/degree45.png
+[image5]: ./assets/car.png
+[image6]: ./assets/dummy.png
 
 # Bevezetés
 Feladatunk egy olyan Turtlebot 3 segítségével megvalósított projekt létrehozása volt, amelyben a Turtlebotot lehelyezzük egy általunk készített világba, ő végighalad a téren az általunk definiált pályás és mi a ráhelyezett kamera képén neurális háló segítségével azonosítjuk az útjába kerülő tárgyakat/embereket.
 ## A működés demonstrálása
 ## Tartalomjegyzék
-1. [Szükséges telepítések](#azükséges-telepítések)
+1. [Szükséges telepítések](#szükséges-telepítések)
 2. [Turtlebot 3 Submodule](#turtlebot-3-submodule)
 3. [Az alkalmazott neurális háló](#az-alkalmazott-neurális-háló)
 4. [A világ](#a-világ)
 5. [Detektálás indítása](#detektálás-indítása)
 6. [Automatikus mozgatás](#automatikus-mozgatás)
+7. [Összefoglalás](#összefoglalás)
 # Szükséges telepítések
 Természetsen szükségünk van a [ROS Noetic](http://wiki.ros.org/noetic/Installation) `full desktop` verziójának telepítésére.
 Emellett még kameraképre és Pythonra is szükségünk van a programot futtató gépre.
@@ -182,6 +186,7 @@ Ahol a függvény a kamera éltal beérkezett képet először átkonvertálja o
 ```bash
 roslaunch object_detection object_detection.launch
 ```
+>Mindehhez futtassuk először egy külön ternimálban a `roscore` parancsot
 parancs segítségével tudjuk futtatni az általunk készített világot.
 
 ![alt text][image1]
@@ -215,7 +220,42 @@ Maga a `object_detection.launch` fájlban behívjuk az `object_detection.world` 
 ```
 >A világban legegyszerűbben a `roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch` futtatásával van lehetőségünk mozogni.
 # Detektálás indítása
-Következő lépésben már futtathatjuk az `object_detector.py` nodeunkat, amely hatására felugrik két ablak az egyik tartamazza kameraképet, a másikon pedig a neurális háló által detektált objektumok lesznek megtalálhatók.
+Következő lépésben már futtathatjuk az `object_detector.py` nodeunkat egy külön terminálban, amely hatására felugrik két ablak az egyik tartamazza kameraképet, a másikon pedig a neurális háló által detektált objektumok lesznek megtalálhatók.
 ![alt text][image2]
-![alt text][image3]
+![alt text][image3]   
+
+Összegezve ezen négy parancs egyidejű futtatása szükséges kézzel történő mozgatás esetén:
+```bash
+roscore
+roslaunch object_detection object_detection.launch
+roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+rosrun object_detection object_detector.py
+```
 # Automatikus mozgatás
+Lehetőségünk van a robotot automatikusan is mozgatni a `movement.py` node futtatásával egy külön terminálban. Ennek hatására a robot egy általunk definiált pályán fog végighaladni. Maga a node a fizikából jól ismert `s=v*t` összefüggés segítségével számolja, hogy meddig kell ahhoz mozognia, hogy 1 méternyi utat megtegyen. A program. A `Ctrl+C` billenytű kombináció htására pedig a robot megáll és ezzel együtt a node is leállításra kerül.
+Viszont észrevettünk egy olyan hibát, ami folytán amennyiben kiadjuk a robotnak a gazebos környezetben, hogy végezzen egyenes vonalú egyenletes mozgást, ő mindig le fog térni a pályáról és egy bizonyos idő elteltével beáll a rácsvonalakra átlós irányú (45°-kal elforgatott) pályára. Viszont amennyiben alapból ilyen irányban indítjuk el a robotot, akkor képes egyenes vonalú egyenletes mozgást végezni. éppen ezért létrehoztunk egy `object_detection_45degree.world` fájlt, amely 45 fokban van elforgatva.
+![alt text][image4]
+Az ehhez tartozó külön Launch fájl pedig az `object_detection_45degree.launch`
+Összesítve ebben az esetben is négy különböző parancs egyidejű, külön terminálban történő futtatására van szükség. Ezek:
+```bash
+roscore
+roslaunch object_detection object_detection_45degree.launch
+rosrun object_detection object_detector.py
+rosrun object_detection movement.py
+```
+# Összefoglalás
+A tesztelések során azt tapasztaltuk, hogy a neurális háló viszonylag pontosan detektálta az útjába kerülő objektumokat. Természetes találkozhatunk anomáliákkal is a futtatás során. Példának okáért a kerekekkel rendelkező ágyat hajlamos a modell kocsiként felismerni. Ennek oka lehet az is, hogy a modell tanítása valós képpekkel történt, illetve abból is adódhat, hogy ilyen jellegő mintán nem lett betanítva.  
+
+![alt text][image5]   
+
+Kísérlet jelleggel pedig elhelyeztünk az egyik szobában egy fehér dummyt, ugyanis kíváncsiak voltunk, hogy vajon őt emberként ismeri-e fel. A tapasztalataink azok voltak, hogy ebben az esetben a model nem ismerte fel egyáltalán semmit a szobában, amit helyes eredményként konstatáltunk.  
+
+![alt text][image6]  
+
+Természetesen fejlesztési lehetőségként meg lehet említeni, hogy esetleg kipróbálhatnánk több különböző modellt ugyanezen feladat elvégzésére, illetve akár saját modellt is alkothatnánk, amely kifejezetten a szimulált környezetben lenne betanítva.
+## Fejlesztők
+```bash
+Barta Ákos
+Hanák Zoltán
+Horváth Marcell
+```
