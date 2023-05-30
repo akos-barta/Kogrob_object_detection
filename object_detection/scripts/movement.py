@@ -6,9 +6,8 @@ import signal
 import sys
 
 # Define the velocity commands
-linear_speed = 0.1  # meters per second
+linear_speed = 0.08  # meters per second
 angular_speed = 0.35  # radians per second
-correction_factor = 0.0  # Correction factor for angular velocity
 
 # Flag to indicate if the robot should continue moving
 is_moving = True
@@ -38,7 +37,6 @@ def move_forward(distance):
     # Set the current time
     current_time = rospy.Time.now().to_sec()
     while (rospy.Time.now().to_sec() - current_time) < duration and is_moving:
-        vel_msg.angular.z = -correction_factor * vel_msg.linear.x  # Apply angular correction
         velocity_publisher.publish(vel_msg)
 
     # Stop the robot after reaching the desired distance
@@ -73,7 +71,7 @@ def rotate(angle, direction="left"):
 
 # Main function
 if __name__ == '__main__':
-    rospy.init_node('turtlebot3_rectangle_trajectory')
+    rospy.init_node('turtlebot3_trajectory')
     move_forward(0.0)
     rotate(0, "left")
     rospy.sleep(1)
@@ -94,27 +92,25 @@ if __name__ == '__main__':
     rospy.sleep(1)
     
     # Move forward
-    move_forward(3.5)
+    move_forward(3.35)
     rospy.sleep(1)
-
-    # Rotate by 90 degrees
-    rotate(1.5708, "left")  # 90 degrees in radians
-    rospy.sleep(1)
-
-    # Move forward enter the room with the white dummy
-    move_forward(6.0)
-    rospy.sleep(3)
 
     # Rotate by 90 degrees
     rotate(1.5708, "left")  # 90 degrees in radians
     rospy.sleep(1)
 
     # Move forward
-    move_forward(0.5)
-    rospy.sleep(1)
+    move_forward(2.0)
+    rospy.sleep(0.5)
+    # Move forward
+    move_forward(2.0)
+    rospy.sleep(0.5)
+    # Move forward
+    move_forward(2.0)
+    rospy.sleep(3)
 
-    # Rotate by 90 degrees
-    rotate(1.5708, "left")  # 90 degrees in radians
+    # Rotate by 180 degrees
+    rotate(1.5708*2-0.03, "left")  # 180 degrees in radians
     rospy.sleep(1)
 
     # Move forward
@@ -126,23 +122,32 @@ if __name__ == '__main__':
     rospy.sleep(1)
 
     # Move forward
-    move_forward(2.0)
+    move_forward(2.3)
     rospy.sleep(1)
 
     # Rotate by -90 degrees
-    rotate(-1.5708, "right")  # -90 degrees in radians
+    rotate(1.5708, "right")  # -90 degrees in radians
     rospy.sleep(1)
 
-    # Move forward, enter the wakening
+    # Move forward, enter the weakening
     move_forward(2.0)
     rospy.sleep(3)
 
     # Rotate by 90 degrees
-    rotate(1.5708, "left")  # 90 degrees in radians
+    rotate(1.5708+0.1, "left")  # 90 degrees in radians
     rospy.sleep(1)
 
     # Move forward
-    move_forward(6.0)
+    move_forward(2.0)
+    rospy.sleep(0.5)
+    # Rotate a bit
+    rotate(0.13, "left")
+    rospy.sleep(1)
+    # Move forward
+    move_forward(2.0)
+    rospy.sleep(0.5)
+    # Move forward
+    move_forward(2.0)
     rospy.sleep(1)
 
     # Rotate by 45 degrees, enter the living room
@@ -166,7 +171,8 @@ if __name__ == '__main__':
     rospy.sleep(1)
 
     # Stop the robot
-    rospy.loginfo("Rectangle trajectory complete. Stopping the robot.")
+    rospy.loginfo("Trajectory complete. Stopping the robot.")
     rospy.sleep(1)
+    sys.exit(0)
 
 rospy.spin()
