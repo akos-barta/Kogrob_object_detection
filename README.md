@@ -20,7 +20,8 @@ Feladatunk egy olyan Turtlebot 3 segítségével megvalósított projekt létreh
 6. [Automatikus mozgatás](#automatikus-mozgatás)
 7. [Összefoglalás](#összefoglalás)
 # Szükséges telepítések
-Természetsen szükségünk van a [ROS Noetic](http://wiki.ros.org/noetic/Installation) `full desktop` verziójának telepítésére.
+Mi a fejlesztéseket `Ubuntu 20.04` alatt végeztük `wsl2` környezetben.   
+Első lépésben szükségünk van a [ROS Noetic](http://wiki.ros.org/noetic/Installation) `full desktop` verziójának telepítésére.
 Emellett még kameraképre és Pythonra is szükségünk van a programot futtató gépre.
 ```bash
 sudo apt install ros-noetic-desktop-full
@@ -258,6 +259,7 @@ roslaunch object_detection object_detection.launch
 ```
 >Mindehhez futtassuk először egy külön ternimálban a `roscore` parancsot
 parancs segítségével tudjuk futtatni az általunk készített világot.   
+>Az első futtatás akár több percet is igénybe vehet a Gazebo modellek importálása és letöltése miatt.
 
 ![alt text][image1]   
 
