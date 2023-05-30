@@ -35,7 +35,7 @@ pip install gluoncv
 pip install opencv-python
 ```
 Majd húzzuk be ezt a repositoryt a Catkin Workspaceünk `src` mappájába.
->`git clone https://github.com/akos-barta/Kogrob_object_detection/tree/main`
+>`git clone https://github.com/akos-barta/Kogrob_object_detection`
 Fontos megemlíteni, hogy a [turtlebot3](https://github.com/Mortharos/turtlebot3) repository submoduleként van hozzáadva a projekthez, ezért annak érdekében, hogy ez letöltésre kerüljön a futtató gépre, a parancssoron a `Kogrob_object_detection/object_detection` mappában a következő két parancsot kell egymás után lefuttatni:
 ```bash
 git submodule init
