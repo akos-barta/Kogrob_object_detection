@@ -124,7 +124,7 @@ A kamera hozzáadása 2 fájlt érint, a `/turtlebot3/turtlebot3_description/urd
 ...
   <!-- Camera -->
   <joint type="fixed" name="camera_joint">
-    <origin xyz="0.03 0 0.11" rpy="0 0.79 0"/>
+    <origin xyz="0.03 0 0.11" rpy="0 -0.15 0"/>
     <child link="camera_link"/>
     <parent link="base_link"/>
     <axis xyz="0 1 0" />
